@@ -8,56 +8,56 @@
 
 import Foundation
 
-class WeatherServices{
+class WeatherServices {
   
   let apiManager = APIManager.sharedInstance
-  let weatherManager = WeatherManager()
   
+  /* Form getWeatherURL */
+  func getWeatherByLatLonURL(lat: Double, lon: Double) -> URL {
+    return URL(string :"\(apiManager.baseURL)/weather?lat=\(lat)&lon=\(lon)&appid=\(apiManager.key)")!
+  }
   
   /* Go fetch data */
-  func getAPIData(url : URL, onSuccess: @escaping(Weather) -> Void, onFailure: @escaping(Error) -> Void){
+  func getWeatherByLatLonFromOpenWeather(lat: Double, lon: Double, completion: @escaping (JSONDictionary?, Error?) -> Void) {
+
+    let weatherURL = getWeatherByLatLonURL(lat: lat, lon: lon)
+    let request = URLRequest(url: weatherURL)
+    let task = jsonTask(request: request) { json, error in
+        DispatchQueue.main.async {
+          guard let currentWeatherJSON = json else {
+            completion(nil, error)
+            return
+          }
+          
+          completion(currentWeatherJSON, nil)
+      }
+    }
+    
+    task.resume()
+  }
+  
+  func jsonTask(request: URLRequest, completion: @escaping (JSONDictionary?, Error?) -> Void) -> URLSessionDataTask {
+    
     let config = URLSessionConfiguration.default
     let session = URLSession(configuration: config)
     
-    let task = session.dataTask(with: url) { (data, response, error) in
-      if let error = error {
-        print(error)
-        onFailure(error)
-      } else {
-        
-        let metaData = self.parseToJSON(data: data!)
-        self.weatherManager.getWeatherManager(weather : metaData, updateWeather : onSuccess)
+    let task = session.dataTask(with: request) { (data, response, error) in
+      
+      guard let data = data else{
+        completion(nil, error)
+        return
+      }
+      
+      do{
+        let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+        completion(json, nil)
+      }
+      catch{
+        completion(nil, error)
       }
     }
-    task.resume()
     
-  }
-  
-  /* Parse JSON*/
-  func parseToJSON(data: Data) ->JSONDictionary{
-    do {
-      guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: AnyObject] else {
-        print("error trying to convert data to JSON")
-        return ["error" : "Trying to convert data to JSON"]
-      }
-
-      guard let main = json["main"] else {
-        print("Could not get todo main from from JSON")
-        return ["error" : "Could not get todo main from from JSON"]
-      }
-      
-      guard let currentTemperature = main["temp"] as? Double else{
-        print("Could not get temperature from from JSON")
-        return ["error" : "Could not get temperature from from JSON"]
-      }
-      
-      return ["temperature" : currentTemperature]
-      
-    } catch let error as NSError {
-      print("Failed to load: \(error.localizedDescription)")
-      return ["error" : "Failed to load: \(error.localizedDescription)"]
-    }
-    
+    return task
   }
   
 }

@@ -10,17 +10,28 @@ import Foundation
 
 class WeatherManager {
   
-  func getWeatherManager(weather : JSONDictionary, updateWeather: @escaping(Weather) -> Void) {
-    var setWeather : Weather = Weather(temperature: "", description: "")
-    setWeather.temperature = setTemperatureToCelsius(temperature: (weather["temperature"] as? Double)!)
-    setWeather.description = "\(weather["description"] ?? "")"
-    print("weather setteado")
-    print(setWeather)
-    updateWeather(setWeather)
-  }
+  let weatherServices = WeatherServices()
   
-  func setTemperatureToCelsius(temperature : Double) -> String{
-    return String(temperature-273.15)
+  func getWeatherByLatLon(lat: Double, lon: Double, completion: @escaping(Weather?, Error?) -> Void) {
+    weatherServices.getWeatherByLatLonFromOpenWeather(lat: lat, lon: lon) { json, error in
+      guard let weatherJSON = json else {
+        completion(nil, error)
+        return
+      }
+      
+      guard let main = weatherJSON["main"] as? [String: Any] else {
+        completion(nil, error)
+        return
+      }
+      
+      guard let currentTemperature = main["temp"] as? Double else{
+        completion(nil, error)
+        return
+      }
+      
+      let currentWeather = Weather(temp: currentTemperature)
+      completion(currentWeather, nil)
+    }
   }
 }
 

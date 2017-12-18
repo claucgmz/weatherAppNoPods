@@ -12,7 +12,7 @@ import CoreLocation
 class ViewController: UIViewController {
   
   let locationManager = CLLocationManager()
-  var currentWeather : Weather?
+  let weatherManager = WeatherManager()
   
   @IBOutlet weak var weatherLabel: UILabel!
   
@@ -21,59 +21,72 @@ class ViewController: UIViewController {
     initLocationManager()
   }
   
-  func loadData(parameters : [String : String]){
-    APIManager.sharedInstance.getWeather(parameters : parameters, onSuccess : showWeatherData, onFailure: showWeatherDataErrors)
-  }
-  
-  func showWeatherData(weather : Weather){
-    currentWeather = weather
-    DispatchQueue.main.async {
-      let temperature = self.currentWeather?.temperature
-      self.weatherLabel.text = "\(temperature ?? "0" ) °C"
+  func getWeatherByLatLon(lat: Double, lon: Double){
+    weatherManager.getWeatherByLatLon(lat: lat, lon: lon) { weather, error in
+      DispatchQueue.main.async {
+        guard let currentWeather = weather else {
+          self.updateWeatherTextLabel(text: error?.localizedDescription ?? "Could not get current weather.")
+          return
+        }
+        
+        self.updateCurrentWeatherData(weather: currentWeather)
+      }
     }
-    
-    print(weather)
   }
   
-  func showWeatherDataErrors(error : Error){
-    print(error)
-    weatherLabel.text = error.localizedDescription
+  func updateCurrentWeatherData(weather : Weather) {
+    let temperature = weather.convertTemperatureToCelsius()
+    updateWeatherTextLabel(text: "\(temperature) °C")
+  }
+  
+  func updateWeatherTextLabel(text: String) {
+     weatherLabel.text = text
   }
   
   @IBAction func getWeatherButton(_ sender: Any) {
+    updateWeatherTextLabel(text: "Updating...") 
     locationManager.startUpdatingLocation()
   }
 }
 
-extension ViewController: CLLocationManagerDelegate {
-  
+//MARK: - Extend for Initial Setup
+/***************************************************************/
+extension ViewController {
   func initLocationManager() {
     locationManager.delegate = self
     locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
     locationManager.requestWhenInUseAuthorization()
   }
+}
+
+extension ViewController: CLLocationManagerDelegate {
   
   //MARK: - Location Manager Delegate Methods
   /***************************************************************/
   
   //didUpdateLocations method
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    let location = locations[locations.count-1]
     
-    if location.horizontalAccuracy>0 {
-      locationManager.stopUpdatingLocation()
+    guard let lastLocation = locations.last else {
+      updateWeatherTextLabel(text: "Couldn't get location")
+      return
     }
     
-    let lat = String(location.coordinate.latitude)
-    let lon = String(location.coordinate.longitude)
+    guard lastLocation.horizontalAccuracy>0 else {
+      updateWeatherTextLabel(text: "Couldn't get accurate location")
+      return
+    }
     
-    let params : [String : String] = ["lat" : lat, "lon" : lon ]
-    loadData(parameters : params)
+    locationManager.stopUpdatingLocation()
+    
+    let currentLat = lastLocation.coordinate.latitude
+    let currentLon = lastLocation.coordinate.longitude
+    getWeatherByLatLon(lat: currentLat, lon: currentLon)
   }
   
   //didFailWithError method
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-    weatherLabel.text = "We couldn't get your location"
+    updateWeatherTextLabel(text: "We couldn't get your location")
   }
   
 }
