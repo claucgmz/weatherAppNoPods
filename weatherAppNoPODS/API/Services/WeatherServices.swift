@@ -10,6 +10,7 @@ import Foundation
 
 class WeatherServices {
   
+  static let sharedInstance = WeatherServices()
   let apiManager = APIManager.sharedInstance
   
   /* Form getWeatherURL */

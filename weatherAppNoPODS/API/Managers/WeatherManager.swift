@@ -9,11 +9,9 @@
 import Foundation
 
 class WeatherManager {
-  
-  let weatherServices = WeatherServices()
-  
+    
   func getWeatherByLatLon(lat: Double, lon: Double, completion: @escaping(Weather?, Error?) -> Void) {
-    weatherServices.getWeatherByLatLonFromOpenWeather(lat: lat, lon: lon) { json, error in
+    WeatherServices.sharedInstance.getWeatherByLatLonFromOpenWeather(lat: lat, lon: lon) { json, error in
       guard let weatherJSON = json else {
         completion(nil, error)
         return
