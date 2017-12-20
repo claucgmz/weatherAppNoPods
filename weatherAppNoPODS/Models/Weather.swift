@@ -9,12 +9,12 @@
 import Foundation
 
 struct Weather {
-  var temperature: Int
+  private var temperature: Int
   var description: String
   
-  init(temp: Double){
-    self.temperature = Int(temp)
-    self.description = ""
+  init(temperature: Double, description: String){
+    self.temperature = Int(temperature)
+    self.description = description
   }
   
   func convertTemperatureToCelsius() -> Int {

@@ -15,28 +15,38 @@ class ViewController: UIViewController {
   let weatherManager = WeatherManager()
   
   @IBOutlet weak var weatherLabel: UILabel!
+  @IBOutlet weak var descriptionLabel: UILabel!
   
   override func viewDidLoad() {
     super.viewDidLoad()
     initLocationManager()
   }
   
-  func getWeatherByLatLon(lat: Double, lon: Double){
-    weatherManager.getWeatherByLatLon(lat: lat, lon: lon) { weather, error in
+  func getWeather(withLatitude latitude: Double, longitude: Double){
+    weatherManager.getWeather(withLatitude: latitude, longitude: longitude, onSuccess: { weather in
       DispatchQueue.main.async {
         guard let currentWeather = weather else {
-          self.updateWeatherTextLabel(text: error?.localizedDescription ?? "Could not get current weather.")
+          self.updateWeatherTextLabel(text: "Couldn't get current weather.")
           return
         }
         
         self.updateCurrentWeatherData(weather: currentWeather)
       }
-    }
+    }, onFailure: { error in
+        DispatchQueue.main.async {
+          guard let error = error else {
+            self.updateWeatherTextLabel(text: "Couldn't not get current weather.")
+            return
+        }
+          self.updateWeatherTextLabel(text: error.errorMessage)
+      }
+    })
   }
   
   func updateCurrentWeatherData(weather : Weather) {
     let temperature = weather.convertTemperatureToCelsius()
     updateWeatherTextLabel(text: "\(temperature) °C")
+    descriptionLabel.text = weather.description
   }
   
   func updateWeatherTextLabel(text: String) {
@@ -44,7 +54,8 @@ class ViewController: UIViewController {
   }
   
   @IBAction func getWeatherButton(_ sender: Any) {
-    updateWeatherTextLabel(text: "Updating...") 
+    updateWeatherTextLabel(text: "Updating...")
+    descriptionLabel.text = ""
     locationManager.startUpdatingLocation()
   }
 }
@@ -79,9 +90,9 @@ extension ViewController: CLLocationManagerDelegate {
     
     locationManager.stopUpdatingLocation()
     
-    let currentLat = lastLocation.coordinate.latitude
-    let currentLon = lastLocation.coordinate.longitude
-    getWeatherByLatLon(lat: currentLat, lon: currentLon)
+    let currentLatitude = lastLocation.coordinate.latitude
+    let currentLongitude = lastLocation.coordinate.longitude
+    getWeather(withLatitude: currentLatitude, longitude: currentLongitude)
   }
   
   //didFailWithError method

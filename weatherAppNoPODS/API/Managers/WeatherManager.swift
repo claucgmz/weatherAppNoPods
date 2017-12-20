@@ -9,27 +9,42 @@
 import Foundation
 
 class WeatherManager {
+  
+  let weatherService = WeatherService()
+  
+  func getWeather(withLatitude latitude: Double, longitude: Double, onSuccess: @escaping(Weather?) -> Void, onFailure: @escaping(WeatherError?) -> Void) {
     
-  func getWeatherByLatLon(lat: Double, lon: Double, completion: @escaping(Weather?, Error?) -> Void) {
-    WeatherServices.sharedInstance.getWeatherByLatLonFromOpenWeather(lat: lat, lon: lon) { json, error in
+    weatherService.getWeather(withLatitude: latitude, longitude: longitude, onSuccess: { json in
+      
       guard let weatherJSON = json else {
-        completion(nil, error)
+        onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-      
+
+      guard let details = weatherJSON["weather"] as? [[String: Any]], !details.isEmpty else{
+        onFailure(WeatherError("Couldn't get weather data."))
+        return
+      }
+
+      guard let description = details[0]["description"] as? String else {
+        onFailure(WeatherError("Couldn't get weather data."))
+        return
+      }
+
       guard let main = weatherJSON["main"] as? [String: Any] else {
-        completion(nil, error)
+        onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-      
+
       guard let currentTemperature = main["temp"] as? Double else{
-        completion(nil, error)
+        onFailure(WeatherError("Couldn't get weather data."))
         return
       }
       
-      let currentWeather = Weather(temp: currentTemperature)
-      completion(currentWeather, nil)
-    }
+      let currentWeather = Weather(temperature: currentTemperature, description: description)
+      onSuccess(currentWeather)
+      
+    }, onFailure: { error in onFailure(WeatherError(error?.localizedDescription ?? "Couldn't get weather data.")) })
   }
 }
 

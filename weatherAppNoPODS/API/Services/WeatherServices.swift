@@ -8,36 +8,40 @@
 
 import Foundation
 
-class WeatherServices {
-  
-  static let sharedInstance = WeatherServices()
-  let apiManager = APIManager.sharedInstance
+class WeatherService {
+
+  private let apiManager = APIManager.sharedInstance
   
   /* Form getWeatherURL */
-  func getWeatherByLatLonURL(lat: Double, lon: Double) -> URL {
-    return URL(string :"\(apiManager.baseURL)/weather?lat=\(lat)&lon=\(lon)&appid=\(apiManager.key)")!
+  private func getWeatherUrl(withLatitude latitude: Double, longitude: Double) -> URL? {
+    if let url = URL(string: "\(apiManager.baseURL)/weather?lat=\(latitude)&lon=\(longitude)&appid=\(apiManager.key)") {
+      return url
+    }
+    return nil
   }
   
   /* Go fetch data */
-  func getWeatherByLatLonFromOpenWeather(lat: Double, lon: Double, completion: @escaping (JSONDictionary?, Error?) -> Void) {
+  func getWeather(withLatitude latitude: Double, longitude: Double, onSuccess: @escaping (JSONDictionary?) -> Void, onFailure: @escaping (Error?) -> Void) {
 
-    let weatherURL = getWeatherByLatLonURL(lat: lat, lon: lon)
-    let request = URLRequest(url: weatherURL)
-    let task = jsonTask(request: request) { json, error in
-        DispatchQueue.main.async {
-          guard let currentWeatherJSON = json else {
-            completion(nil, error)
-            return
-          }
-          
-          completion(currentWeatherJSON, nil)
-      }
+    guard let weatherURL = getWeatherUrl(withLatitude: latitude, longitude: longitude) else {
+      onFailure(WeatherError("Couldn't get weather url."))
+      return
     }
+    
+    let request = URLRequest(url: weatherURL)
+    let task = jsonTask(request: request, onSuccess: { json in
+      guard let currentWeatherJSON = json else {
+        onFailure(WeatherError("Couldn't get weather data."))
+        return
+      }
+      onSuccess(currentWeatherJSON)
+      
+    }, onFailure: { error in onFailure(error) })
     
     task.resume()
   }
   
-  func jsonTask(request: URLRequest, completion: @escaping (JSONDictionary?, Error?) -> Void) -> URLSessionDataTask {
+  func jsonTask(request: URLRequest, onSuccess: @escaping (JSONDictionary?) -> Void, onFailure: @escaping (Error?) -> Void) -> URLSessionDataTask {
     
     let config = URLSessionConfiguration.default
     let session = URLSession(configuration: config)
@@ -45,16 +49,16 @@ class WeatherServices {
     let task = session.dataTask(with: request) { (data, response, error) in
       
       guard let data = data else{
-        completion(nil, error)
+        onFailure(nil)
         return
       }
       
       do{
         let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-        completion(json, nil)
+        onSuccess(json)
       }
       catch{
-        completion(nil, error)
+        onFailure(nil)
       }
     }
     
