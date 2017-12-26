@@ -41,7 +41,22 @@ class WeatherManager {
         return
       }
       
-      let currentWeather = Weather(temperature: currentTemperature, description: description)
+      guard let minTemperature = main["temp_min"] as? Double else{
+        onFailure(WeatherError("Couldn't get weather data."))
+        return
+      }
+
+      guard let maxTemperature = main["temp_max"] as? Double else{
+        onFailure(WeatherError("Couldn't get weather data."))
+        return
+      }
+
+      guard let cityName = weatherJSON["name"] as? String else{
+        onFailure(WeatherError("Couldn't get weather data."))
+        return
+      }
+      
+      let currentWeather = Weather(temperature: currentTemperature, minTemperature: minTemperature, maxTemperature: maxTemperature, cityName: cityName, description: description)
       onSuccess(currentWeather)
       
     }, onFailure: { error in onFailure(WeatherError(error?.localizedDescription ?? "Couldn't get weather data.")) })

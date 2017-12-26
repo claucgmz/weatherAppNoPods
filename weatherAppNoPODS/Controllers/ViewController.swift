@@ -14,7 +14,10 @@ class ViewController: UIViewController {
   let locationManager = CLLocationManager()
   let weatherManager = WeatherManager()
   
-  @IBOutlet weak var weatherLabel: UILabel!
+  @IBOutlet weak var cityNameLabel: UILabel!
+  @IBOutlet weak var currentTemperatureLabel: UILabel!
+  @IBOutlet weak var minTemperatureLabel: UILabel!
+  @IBOutlet weak var maxTemperatureLabel: UILabel!
   @IBOutlet weak var descriptionLabel: UILabel!
   
   override func viewDidLoad() {
@@ -45,12 +48,12 @@ class ViewController: UIViewController {
   
   func updateCurrentWeatherData(weather : Weather) {
     let temperature = weather.convertTemperatureToCelsius()
-    updateWeatherTextLabel(text: "\(temperature) °C")
+    updateWeatherTextLabel(text: "\(temperature) °")
     descriptionLabel.text = weather.description
   }
   
   func updateWeatherTextLabel(text: String) {
-     weatherLabel.text = text
+     currentTemperatureLabel.text = text
   }
   
   @IBAction func getWeatherButton(_ sender: Any) {
