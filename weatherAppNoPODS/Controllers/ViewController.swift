@@ -13,7 +13,12 @@ class ViewController: UIViewController {
   
   let locationManager = CLLocationManager()
   let weatherManager = WeatherManager()
+  var currentLatitude: Double = 0.0
+  var currentLongitude: Double = 0.0
   
+  @IBOutlet weak var loadingLabel: UILabel!
+  
+  @IBOutlet weak var mainWeatherView: UIView!
   @IBOutlet weak var cityNameLabel: UILabel!
   @IBOutlet weak var currentTemperatureLabel: UILabel!
   @IBOutlet weak var minTemperatureLabel: UILabel!
@@ -23,6 +28,13 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     initLocationManager()
+    getWeatherUpdate()
+  }
+  
+  func getWeatherUpdate() {
+    mainWeatherView.isHidden = true
+    loadingLabel.isHidden = false
+    locationManager.startUpdatingLocation()
   }
   
   func getWeather(withLatitude latitude: Double, longitude: Double){
@@ -47,19 +59,29 @@ class ViewController: UIViewController {
   }
   
   func updateCurrentWeatherData(weather : Weather) {
-    let temperature = weather.convertTemperatureToCelsius()
-    updateWeatherTextLabel(text: "\(temperature) °")
+    currentTemperatureLabel.text = "\(weather.temperature.convertTemperatureToCelsius())°"
+    minTemperatureLabel.text = "\(weather.minTemperature.convertTemperatureToCelsius())°"
+    maxTemperatureLabel.text = "\(weather.maxTemperature.convertTemperatureToCelsius())°"
     descriptionLabel.text = weather.description
+    cityNameLabel.text = weather.cityName
+    
+    loadingLabel.isHidden = true
+    mainWeatherView.isHidden = false
   }
   
   func updateWeatherTextLabel(text: String) {
-     currentTemperatureLabel.text = text
+    mainWeatherView.isHidden = true
+    loadingLabel.isHidden = false
+    loadingLabel.text = text
   }
   
-  @IBAction func getWeatherButton(_ sender: Any) {
-    updateWeatherTextLabel(text: "Updating...")
-    descriptionLabel.text = ""
-    locationManager.startUpdatingLocation()
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if segue.identifier == "weatherForecastSegue" {
+      let DestViewController = segue.destination as! UINavigationController
+      let targetController = DestViewController.topViewController as! WeatherForecastViewController
+      targetController.currentLatitude = currentLatitude
+      targetController.currentLongitude = currentLongitude
+    }
   }
 }
 
@@ -93,8 +115,8 @@ extension ViewController: CLLocationManagerDelegate {
     
     locationManager.stopUpdatingLocation()
     
-    let currentLatitude = lastLocation.coordinate.latitude
-    let currentLongitude = lastLocation.coordinate.longitude
+    currentLatitude = lastLocation.coordinate.latitude
+    currentLongitude = lastLocation.coordinate.longitude
     getWeather(withLatitude: currentLatitude, longitude: currentLongitude)
   }
   

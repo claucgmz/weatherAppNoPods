@@ -9,23 +9,22 @@
 import Foundation
 
 struct Weather {
-  private var temperature: Int
+  var dateTime: Double
+  var temperature: Int
   var minTemperature: Int
   var maxTemperature: Int
   var description: String
-  var cityName: String
-  
-  init(temperature: Double, minTemperature: Double, maxTemperature: Double, cityName: String, description: String){
+  var cityName = ""
+
+  init(temperature: Double, minTemperature: Double, maxTemperature: Double, dateTime: Double, cityName: String, description: String) {
     self.temperature = Int(temperature)
     self.minTemperature = Int(minTemperature)
     self.maxTemperature = Int(maxTemperature)
+    self.dateTime = dateTime
     self.cityName = cityName
     self.description = description
   }
   
-  func convertTemperatureToCelsius() -> Int {
-    return self.temperature-273
-  }
 }
 
 extension Int {
