@@ -10,14 +10,12 @@ import UIKit
 import CoreLocation
 
 class ViewController: UIViewController {
-  
   let locationManager = CLLocationManager()
   let weatherManager = WeatherManager()
   var currentLatitude: Double = 0.0
   var currentLongitude: Double = 0.0
   
   @IBOutlet weak var loadingLabel: UILabel!
-  
   @IBOutlet weak var mainWeatherView: UIView!
   @IBOutlet weak var cityNameLabel: UILabel!
   @IBOutlet weak var currentTemperatureLabel: UILabel!
@@ -31,48 +29,60 @@ class ViewController: UIViewController {
     getWeatherUpdate()
   }
   
+  //MARK: - Get weather Methods
+  /***************************************************************/
   func getWeatherUpdate() {
     mainWeatherView.isHidden = true
     loadingLabel.isHidden = false
     locationManager.startUpdatingLocation()
   }
   
-  func getWeather(withLatitude latitude: Double, longitude: Double){
+  func getWeather(withLatitude latitude: Double, longitude: Double) {
     weatherManager.getWeather(withLatitude: latitude, longitude: longitude, onSuccess: { weather in
       DispatchQueue.main.async {
         guard let currentWeather = weather else {
-          self.updateWeatherTextLabel(text: "Couldn't get current weather.")
+          self.updateLoadingTextLabel(text: "Couldn't get current weather.")
           return
         }
-        
         self.updateCurrentWeatherData(weather: currentWeather)
       }
     }, onFailure: { error in
-        DispatchQueue.main.async {
-          guard let error = error else {
-            self.updateWeatherTextLabel(text: "Couldn't not get current weather.")
-            return
+      DispatchQueue.main.async {
+        guard let error = error else {
+          self.updateLoadingTextLabel(text: "Couldn't not get current weather.")
+          return
         }
-          self.updateWeatherTextLabel(text: error.errorMessage)
+        self.updateLoadingTextLabel(text: error.errorMessage)
       }
     })
   }
   
+  //MARK: - View & Labels Update Methods
+  /***************************************************************/
   func updateCurrentWeatherData(weather : Weather) {
     currentTemperatureLabel.text = "\(weather.temperature.convertTemperatureToCelsius())°"
     minTemperatureLabel.text = "\(weather.minTemperature.convertTemperatureToCelsius())°"
     maxTemperatureLabel.text = "\(weather.maxTemperature.convertTemperatureToCelsius())°"
     descriptionLabel.text = weather.description
-    cityNameLabel.text = weather.cityName
-    
+    cityNameLabel.text = "\(weather.cityName), \(weather.countryName)"
     loadingLabel.isHidden = true
     mainWeatherView.isHidden = false
   }
   
-  func updateWeatherTextLabel(text: String) {
+  func updateLoadingTextLabel(text: String) {
+    loadingLabel.text = text
     mainWeatherView.isHidden = true
     loadingLabel.isHidden = false
-    loadingLabel.text = text
+  }
+}
+
+//MARK: - Extend for Initial Setup & Segues
+/***************************************************************/
+extension ViewController {
+  func initLocationManager() {
+    locationManager.delegate = self
+    locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+    locationManager.requestWhenInUseAuthorization()
   }
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -85,31 +95,19 @@ class ViewController: UIViewController {
   }
 }
 
-//MARK: - Extend for Initial Setup
+//MARK: - Location Manager Delegate Methods
 /***************************************************************/
-extension ViewController {
-  func initLocationManager() {
-    locationManager.delegate = self
-    locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-    locationManager.requestWhenInUseAuthorization()
-  }
-}
-
 extension ViewController: CLLocationManagerDelegate {
-  
-  //MARK: - Location Manager Delegate Methods
-  /***************************************************************/
-  
   //didUpdateLocations method
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
     
     guard let lastLocation = locations.last else {
-      updateWeatherTextLabel(text: "Couldn't get location")
+      updateLoadingTextLabel(text: "Couldn't get location")
       return
     }
     
     guard lastLocation.horizontalAccuracy>0 else {
-      updateWeatherTextLabel(text: "Couldn't get accurate location")
+      updateLoadingTextLabel(text: "Couldn't get accurate location")
       return
     }
     
@@ -117,12 +115,13 @@ extension ViewController: CLLocationManagerDelegate {
     
     currentLatitude = lastLocation.coordinate.latitude
     currentLongitude = lastLocation.coordinate.longitude
+    
     getWeather(withLatitude: currentLatitude, longitude: currentLongitude)
   }
   
   //didFailWithError method
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-    updateWeatherTextLabel(text: "We couldn't get your location")
+    updateLoadingTextLabel(text: "We couldn't get your location")
   }
   
 }

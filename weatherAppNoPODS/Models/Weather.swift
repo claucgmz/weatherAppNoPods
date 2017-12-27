@@ -15,16 +15,17 @@ struct Weather {
   var maxTemperature: Int
   var description: String
   var cityName = ""
+  var countryName = ""
 
-  init(temperature: Double, minTemperature: Double, maxTemperature: Double, dateTime: Double, cityName: String, description: String) {
+  init(temperature: Double, minTemperature: Double, maxTemperature: Double, dateTime: Double, cityName: String, countryName: String, description: String) {
     self.temperature = Int(temperature)
     self.minTemperature = Int(minTemperature)
     self.maxTemperature = Int(maxTemperature)
     self.dateTime = dateTime
     self.cityName = cityName
+    self.countryName = countryName
     self.description = description
   }
-  
 }
 
 extension Int {

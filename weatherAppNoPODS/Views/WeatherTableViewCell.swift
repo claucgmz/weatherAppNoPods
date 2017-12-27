@@ -9,9 +9,8 @@
 import UIKit
 
 class WeatherTableViewCell: UITableViewCell {
-
   @IBOutlet weak var dayLabel: UILabel!
+  @IBOutlet weak var dateLabel: UILabel!
   @IBOutlet weak var maxTemperatureLabel: UILabel!
   @IBOutlet weak var minTemperatureLabel: UILabel!
-
 }

@@ -20,7 +20,7 @@ class WeatherManager {
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-      
+
       guard let dateTime = weatherJSON["dt"] as? Double else {
         onFailure(WeatherError("Couldn't get weather data."))
         return
@@ -61,7 +61,17 @@ class WeatherManager {
         return
       }
       
-      let currentWeather = Weather(temperature: currentTemperature, minTemperature: minTemperature, maxTemperature: maxTemperature, dateTime: dateTime, cityName: cityName, description: description)
+      guard let country = weatherJSON["sys"] as? [String: Any] else {
+        onFailure(WeatherError("Couldn't get weather data."))
+        return
+      }
+      
+      guard let countryName = country["country"] as? String else{
+        onFailure(WeatherError("Couldn't get weather data."))
+        return
+      }
+      
+      let currentWeather = Weather(temperature: currentTemperature, minTemperature: minTemperature, maxTemperature: maxTemperature, dateTime: dateTime, cityName: cityName, countryName: countryName, description: description)
       
       onSuccess(currentWeather)
       
@@ -69,7 +79,10 @@ class WeatherManager {
   }
   
   func getWeatherForecast(withLatitude latitude: Double, longitude: Double, onSuccess: @escaping([Weather]?) -> Void, onFailure: @escaping(WeatherError?) -> Void) {
+    
     weatherService.getWeatherForecast(withLatitude: latitude, longitude: longitude, onSuccess: { json in
+      
+      var fiveDayForecastWeathers = [Weather]()
       
       guard let weatherJSON = json else {
         onFailure(WeatherError("Couldn't get weather data."))
@@ -86,24 +99,25 @@ class WeatherManager {
         return
       }
       
-      guard let list = weatherJSON["list"] as? [[String: Any]], !list.isEmpty else  {
+      guard let countryName = city["country"] as? String else {
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
       
-      var fiveDayForecastWeathers = [Weather]()
+      guard let list = weatherJSON["list"] as? [[String: Any]], !list.isEmpty else  {
+        onFailure(WeatherError("Couldn't get weather data."))
+        return
+      }
 
       for i in stride(from: 0, to: list.count, by: 7) {
-        
         let weather = list[i]
-        
+
         guard let dateTime = weather["dt"] as? Double else {
           onFailure(WeatherError("Couldn't get weather data."))
           return
         }
         
         if(!self.isDateToday(from: dateTime)) {
-          
           guard let details = weather["weather"] as? [[String: Any]], !details.isEmpty else {
             onFailure(WeatherError("Couldn't get weather data."))
             return
@@ -134,17 +148,14 @@ class WeatherManager {
             return
           }
           
-          let currentWeather = Weather(temperature: currentTemperature, minTemperature: minTemperature, maxTemperature: maxTemperature, dateTime: dateTime, cityName: cityName, description: description)
-          
+          let currentWeather = Weather(temperature: currentTemperature, minTemperature: minTemperature, maxTemperature: maxTemperature, dateTime: dateTime, cityName: cityName, countryName: countryName, description: description)
           fiveDayForecastWeathers.append(currentWeather)
-          
         }
-        
       }
       
       onSuccess(fiveDayForecastWeathers)
       
-    }, onFailure: { error in  })
+    }, onFailure: { error in  onFailure(WeatherError(error?.localizedDescription ?? "Couldn't get weather data."))})
   }
   
   func isDateToday(from interval : TimeInterval) -> Bool {

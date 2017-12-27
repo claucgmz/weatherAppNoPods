@@ -143,8 +143,8 @@
 		5F51D5FE1FE1BEED00293AEB /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				5F51D5D11FE1BED700293AEB /* ViewController.swift */,
 				5F9EB2661FF2CFA000B2314E /* WeatherForecastViewController.swift */,
+				5F51D5D11FE1BED700293AEB /* ViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
