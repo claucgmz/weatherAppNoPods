@@ -18,7 +18,7 @@ class WeatherForecastViewController: UIViewController {
   var currentLocation: Location?
   
   var weathers = [Weather]()
-
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     weatherForecastTableView.delegate = self
@@ -69,7 +69,7 @@ class WeatherForecastViewController: UIViewController {
   @IBAction func back(_ sender: Any) {
     self.dismiss(animated: true, completion: nil)
   }
-
+  
 }
 
 //MARK: - TableView DataSource Methods
@@ -93,7 +93,7 @@ extension WeatherForecastViewController: UITableViewDataSource {
         cell.backgroundColor = tealBlue
       }
       else{
-       cell.backgroundColor = blue
+        cell.backgroundColor = blue
       }
     }
     

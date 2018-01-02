@@ -35,7 +35,7 @@ class ViewController: UIViewController {
     loadingLabel.isHidden = false
     locationManager.startUpdatingLocation()
   }
-
+  
   func getWeather(withLocation location: Location) {
     weatherManager.getWeather(withLocation: location, onSuccess: { weather in
       DispatchQueue.main.async {
@@ -80,7 +80,7 @@ class ViewController: UIViewController {
     }
     return super.traitCollection
   }
-
+  
 }
 
 //MARK: - Extend for Initial Setup & Segues
@@ -97,7 +97,7 @@ extension ViewController {
     guard let segueIdentifier = segue.identifier else {
       return
     }
-
+    
     if segueIdentifier == "weatherForecastSegue" {
       let DestViewController = segue.destination as! UINavigationController
       let targetController = DestViewController.topViewController as! WeatherForecastViewController

@@ -15,7 +15,7 @@ typealias WeatherErrorHandler = (WeatherError?) -> Void
 class WeatherManager {
   
   let weatherService = WeatherService()
-
+  
   func getWeather(withLocation location: Location, onSuccess: @escaping WeatherSuccessHandler, onFailure: @escaping WeatherErrorHandler) {
     
     weatherService.getWeather(withLocation: location, onSuccess: { json in
@@ -24,27 +24,27 @@ class WeatherManager {
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-
+      
       guard let dateTime = weatherJSON["dt"] as? Double else {
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-
+      
       guard let details = weatherJSON["weather"] as? [[String: Any]], !details.isEmpty else {
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-
+      
       guard let description = details[0]["description"] as? String else {
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-
+      
       guard let main = weatherJSON["main"] as? [String: Any] else {
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-
+      
       guard let currentTemperature = main["temp"] as? Double else{
         onFailure(WeatherError("Couldn't get weather data."))
         return
@@ -54,12 +54,12 @@ class WeatherManager {
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-
+      
       guard let maxTemperature = main["temp_max"] as? Double else{
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-
+      
       guard let cityName = weatherJSON["name"] as? String else{
         onFailure(WeatherError("Couldn't get weather data."))
         return
@@ -92,7 +92,7 @@ class WeatherManager {
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-
+      
       guard let city = weatherJSON["city"] as? [String: Any] else {
         onFailure(WeatherError("Couldn't get weather data."))
         return
@@ -112,10 +112,10 @@ class WeatherManager {
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-
+      
       for i in stride(from: 0, to: list.count, by: 7) {
         let weather = list[i]
-
+        
         guard let dateTime = weather["dt"] as? Double else {
           onFailure(WeatherError("Couldn't get weather data."))
           return
