@@ -1,5 +1,5 @@
 //
-//  WeatherServices.swift
+//  WeatherService.swift
 //  weatherApp_noPODS
 //
 //  Created by Caludia Carrillo on 12/13/17.
@@ -9,19 +9,23 @@
 import Foundation
 
 class WeatherService {
-
+  
   private let apiManager = APIManager.sharedInstance
+  private enum WeatherType: String {
+    case weather = "weather"
+    case forecast = "forecast"
+  }
   
   /* Form getWeatherURL */
-  private func getWeatherUrl(withLocation location: Location, endpoint: Endpoint) -> URL? {
-    if let url = URL(string: "\(apiManager.baseURL)/\(endpoint.rawValue)?lat=\(location.latitude)&lon=\(location.longitude)&appid=\(apiManager.key)") {
+  private func getWeatherUrl(withLocation location: Location, weatherType: WeatherType) -> URL? {
+    if let url = URL(string: "\(apiManager.baseURL)/\(weatherType.rawValue)?lat=\(location.latitude)&lon=\(location.longitude)&appid=\(apiManager.key)") {
       return url
     }
     return nil
   }
   
   func getWeather(withLocation location: Location, onSuccess: @escaping JSONSuccessHandler, onFailure: @escaping ErrorHandler) {
-    guard let weatherURL = getWeatherUrl(withLocation: location, endpoint: .Weather) else {
+    guard let weatherURL = getWeatherUrl(withLocation: location, weatherType: .weather) else {
       onFailure(WeatherError("Couldn't get weather url."))
       return
     }
@@ -30,7 +34,7 @@ class WeatherService {
   }
   
   func getWeatherForecast(withLocation location: Location, onSuccess: @escaping JSONSuccessHandler, onFailure: @escaping ErrorHandler) {
-    guard let weatherURL = getWeatherUrl(withLocation: location, endpoint: .Forecast) else {
+    guard let weatherURL = getWeatherUrl(withLocation: location, weatherType: .forecast) else {
       onFailure(WeatherError("Couldn't get weather forecast url."))
       return
     }
@@ -48,7 +52,7 @@ class WeatherService {
       
       onSuccess(currentWeatherJSON)
     }, onFailure: { error in onFailure(error) })
-
+    
     task.resume()
   }
   

@@ -66,10 +66,10 @@ class WeatherForecastViewController: UIViewController {
     loadingLabel.isHidden = false
   }
   
-  
   @IBAction func back(_ sender: Any) {
     self.dismiss(animated: true, completion: nil)
   }
+
 }
 
 //MARK: - TableView DataSource Methods
@@ -106,5 +106,14 @@ extension WeatherForecastViewController: UITableViewDataSource {
 extension WeatherForecastViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     return 68.0
+  }
+  
+  func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    let header = tableView.dequeueReusableCell(withIdentifier: "WeatherHeaderCell")
+    return header
+  }
+  
+  func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return 44
   }
 }

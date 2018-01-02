@@ -73,6 +73,14 @@ class ViewController: UIViewController {
     mainWeatherView.isHidden = true
     loadingLabel.isHidden = false
   }
+  
+  override public var traitCollection: UITraitCollection {
+    if UIDevice.current.userInterfaceIdiom == .pad && UIDevice.current.orientation.isPortrait {
+      return UITraitCollection(traitsFrom: [UITraitCollection(horizontalSizeClass: .compact), UITraitCollection(verticalSizeClass: .regular)])
+    }
+    return super.traitCollection
+  }
+
 }
 
 //MARK: - Extend for Initial Setup & Segues
@@ -85,7 +93,12 @@ extension ViewController {
   }
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == "weatherForecastSegue" {
+    
+    guard let segueIdentifier = segue.identifier else {
+      return
+    }
+
+    if segueIdentifier == "weatherForecastSegue" {
       let DestViewController = segue.destination as! UINavigationController
       let targetController = DestViewController.topViewController as! WeatherForecastViewController
       targetController.currentLocation = currentLocation

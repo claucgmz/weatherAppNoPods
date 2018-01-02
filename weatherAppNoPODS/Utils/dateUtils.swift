@@ -12,7 +12,7 @@ func getFormattedDate(dateTime: Double) -> String {
   let date = NSDate(timeIntervalSince1970: TimeInterval(dateTime))
   let dateFormatter = DateFormatter()
   
-  dateFormatter.dateFormat = "dd/MM/YYYY"
+  dateFormatter.dateFormat = "MMMM, dd YYYY"
   
   return dateFormatter.string(from: date as Date)
 }
