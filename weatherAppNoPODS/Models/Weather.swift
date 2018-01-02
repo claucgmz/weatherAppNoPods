@@ -9,13 +9,14 @@
 import Foundation
 
 struct Weather {
+
   var dateTime: Double
   var temperature: Int
   var minTemperature: Int
   var maxTemperature: Int
   var description: String
-  var cityName = ""
-  var countryName = ""
+  var cityName: String
+  var countryName: String
 
   init(temperature: Double, minTemperature: Double, maxTemperature: Double, dateTime: Double, cityName: String, countryName: String, description: String) {
     self.temperature = Int(temperature)

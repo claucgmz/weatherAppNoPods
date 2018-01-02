@@ -12,11 +12,10 @@ import CoreLocation
 class ViewController: UIViewController {
   let locationManager = CLLocationManager()
   let weatherManager = WeatherManager()
-  var currentLatitude: Double = 0.0
-  var currentLongitude: Double = 0.0
+  var currentLocation: Location?
   
   @IBOutlet weak var loadingLabel: UILabel!
-  @IBOutlet weak var mainWeatherView: UIView!
+  @IBOutlet weak var mainWeatherView: UIStackView!
   @IBOutlet weak var cityNameLabel: UILabel!
   @IBOutlet weak var currentTemperatureLabel: UILabel!
   @IBOutlet weak var minTemperatureLabel: UILabel!
@@ -36,9 +35,9 @@ class ViewController: UIViewController {
     loadingLabel.isHidden = false
     locationManager.startUpdatingLocation()
   }
-  
-  func getWeather(withLatitude latitude: Double, longitude: Double) {
-    weatherManager.getWeather(withLatitude: latitude, longitude: longitude, onSuccess: { weather in
+
+  func getWeather(withLocation location: Location) {
+    weatherManager.getWeather(withLocation: location, onSuccess: { weather in
       DispatchQueue.main.async {
         guard let currentWeather = weather else {
           self.updateLoadingTextLabel(text: "Couldn't get current weather.")
@@ -89,8 +88,7 @@ extension ViewController {
     if segue.identifier == "weatherForecastSegue" {
       let DestViewController = segue.destination as! UINavigationController
       let targetController = DestViewController.topViewController as! WeatherForecastViewController
-      targetController.currentLatitude = currentLatitude
-      targetController.currentLongitude = currentLongitude
+      targetController.currentLocation = currentLocation
     }
   }
 }
@@ -112,11 +110,14 @@ extension ViewController: CLLocationManagerDelegate {
     }
     
     locationManager.stopUpdatingLocation()
+    currentLocation = Location(latitude: lastLocation.coordinate.latitude, longitude: lastLocation.coordinate.longitude)
     
-    currentLatitude = lastLocation.coordinate.latitude
-    currentLongitude = lastLocation.coordinate.longitude
+    guard let location = currentLocation else {
+      updateLoadingTextLabel(text: "Couldn't get current location")
+      return
+    }
     
-    getWeather(withLatitude: currentLatitude, longitude: currentLongitude)
+    getWeather(withLocation: location)
   }
   
   //didFailWithError method

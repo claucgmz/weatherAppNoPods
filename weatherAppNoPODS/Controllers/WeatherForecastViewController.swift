@@ -12,9 +12,10 @@ class WeatherForecastViewController: UIViewController {
   @IBOutlet weak var weatherForecastTableView: UITableView!
   @IBOutlet weak var loadingLabel: UILabel!
   
+  let tealBlue = UIColor(red: 90/255, green: 200/255, blue: 1.0, alpha: 0.6)
+  let blue = UIColor(red: 0, green: 122/255, blue: 1.0, alpha: 0.6)
   let weatherManager = WeatherManager()
-  var currentLatitude = 0.0
-  var currentLongitude = 0.0
+  var currentLocation: Location?
   
   var weathers = [Weather]()
 
@@ -27,11 +28,16 @@ class WeatherForecastViewController: UIViewController {
     weatherForecastTableView.isHidden = true
     loadingLabel.isHidden = false
     
-    getWeatherForecast(withLatitude: currentLatitude, longitude: currentLongitude)
+    guard let location = currentLocation else {
+      updateLoadingTextLabel(text: "Couldn't get current location")
+      return
+    }
+    
+    getWeatherForecast(withLocation: location)
   }
   
-  func getWeatherForecast(withLatitude latitude: Double, longitude: Double) {
-    weatherManager.getWeatherForecast(withLatitude: latitude, longitude: longitude, onSuccess: { fiveDayWeatherForecast in
+  func getWeatherForecast(withLocation location: Location) {
+    weatherManager.getWeatherForecast(withLocation: location, onSuccess: { fiveDayWeatherForecast in
       DispatchQueue.main.async {
         guard let fiveDayWeatherForecast = fiveDayWeatherForecast else {
           self.updateLoadingTextLabel(text: "Couldn't get forecast weather data.")
@@ -82,6 +88,13 @@ extension WeatherForecastViewController: UITableViewDataSource {
       weatherCell.minTemperatureLabel.text = "\(weather.minTemperature.convertTemperatureToCelsius())°"
       weatherCell.dateLabel.text = getFormattedDate(dateTime: weather.dateTime)
       weatherCell.dayLabel.text = getDayOfWeek(dateTime: weather.dateTime)
+      
+      if( indexPath.row % 2 == 0) {
+        cell.backgroundColor = tealBlue
+      }
+      else{
+       cell.backgroundColor = blue
+      }
     }
     
     return cell

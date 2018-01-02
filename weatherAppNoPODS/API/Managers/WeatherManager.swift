@@ -8,13 +8,17 @@
 
 import Foundation
 
+typealias WeatherSuccessHandler = (Weather?) -> Void
+typealias WeatherArraySuccessHandler = ([Weather]?) -> Void
+typealias WeatherErrorHandler = (WeatherError?) -> Void
+
 class WeatherManager {
   
   let weatherService = WeatherService()
-  
-  func getWeather(withLatitude latitude: Double, longitude: Double, onSuccess: @escaping(Weather?) -> Void, onFailure: @escaping(WeatherError?) -> Void) {
+
+  func getWeather(withLocation location: Location, onSuccess: @escaping WeatherSuccessHandler, onFailure: @escaping WeatherErrorHandler) {
     
-    weatherService.getWeather(withLatitude: latitude, longitude: longitude, onSuccess: { json in
+    weatherService.getWeather(withLocation: location, onSuccess: { json in
       
       guard let weatherJSON = json else {
         onFailure(WeatherError("Couldn't get weather data."))
@@ -78,9 +82,9 @@ class WeatherManager {
     }, onFailure: { error in onFailure(WeatherError(error?.localizedDescription ?? "Couldn't get weather data.")) })
   }
   
-  func getWeatherForecast(withLatitude latitude: Double, longitude: Double, onSuccess: @escaping([Weather]?) -> Void, onFailure: @escaping(WeatherError?) -> Void) {
+  func getWeatherForecast(withLocation location: Location, onSuccess: @escaping WeatherArraySuccessHandler, onFailure: @escaping WeatherErrorHandler) {
     
-    weatherService.getWeatherForecast(withLatitude: latitude, longitude: longitude, onSuccess: { json in
+    weatherService.getWeatherForecast(withLocation: location, onSuccess: { json in
       
       var fiveDayForecastWeathers = [Weather]()
       
@@ -117,7 +121,7 @@ class WeatherManager {
           return
         }
         
-        if(!self.isDateToday(from: dateTime)) {
+        if(!isDateToday(from: dateTime)) {
           guard let details = weather["weather"] as? [[String: Any]], !details.isEmpty else {
             onFailure(WeatherError("Couldn't get weather data."))
             return
@@ -157,15 +161,5 @@ class WeatherManager {
       
     }, onFailure: { error in  onFailure(WeatherError(error?.localizedDescription ?? "Couldn't get weather data."))})
   }
-  
-  func isDateToday(from interval : TimeInterval) -> Bool {
-    let calendar = NSCalendar.current
-    let date = Date(timeIntervalSince1970: interval)
-    if calendar.isDateInToday(date) {
-      return true
-    }
-    return false
-  }
-  
 }
 

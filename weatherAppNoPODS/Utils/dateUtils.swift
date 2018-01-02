@@ -28,3 +28,12 @@ func getDayOfWeek(dateTime: Double) -> String {
   
   return "Not available"
 }
+
+func isDateToday(from interval : TimeInterval) -> Bool {
+  let calendar = NSCalendar.current
+  let date = Date(timeIntervalSince1970: interval)
+  if calendar.isDateInToday(date) {
+    return true
+  }
+  return false
+}

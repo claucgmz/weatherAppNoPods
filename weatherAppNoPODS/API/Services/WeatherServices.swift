@@ -13,24 +13,15 @@ class WeatherService {
   private let apiManager = APIManager.sharedInstance
   
   /* Form getWeatherURL */
-  private func getWeatherUrl(withLatitude latitude: Double, longitude: Double, endpoint: Endpoint) -> URL? {
-    if let url = URL(string: "\(apiManager.baseURL)/\(endpoint.rawValue)?lat=\(latitude)&lon=\(longitude)&appid=\(apiManager.key)") {
+  private func getWeatherUrl(withLocation location: Location, endpoint: Endpoint) -> URL? {
+    if let url = URL(string: "\(apiManager.baseURL)/\(endpoint.rawValue)?lat=\(location.latitude)&lon=\(location.longitude)&appid=\(apiManager.key)") {
       return url
     }
     return nil
   }
   
-  func getWeatherForecast(withLatitude latitude: Double, longitude: Double, onSuccess: @escaping (JSONDictionary?) -> Void, onFailure: @escaping (Error?) -> Void) {
-    guard let weatherURL = getWeatherUrl(withLatitude: latitude, longitude: longitude, endpoint: .Forecast) else {
-      onFailure(WeatherError("Couldn't get weather forecast url."))
-      return
-    }
-    
-    requestWeatherData(weatherURL: weatherURL, onSuccess: onSuccess, onFailure: onFailure)
-  }
-  
-  func getWeather(withLatitude latitude: Double, longitude: Double, onSuccess: @escaping (JSONDictionary?) -> Void, onFailure: @escaping (Error?) -> Void) {
-    guard let weatherURL = getWeatherUrl(withLatitude: latitude, longitude: longitude, endpoint: .Weather) else {
+  func getWeather(withLocation location: Location, onSuccess: @escaping JSONSuccessHandler, onFailure: @escaping ErrorHandler) {
+    guard let weatherURL = getWeatherUrl(withLocation: location, endpoint: .Weather) else {
       onFailure(WeatherError("Couldn't get weather url."))
       return
     }
@@ -38,7 +29,16 @@ class WeatherService {
     requestWeatherData(weatherURL: weatherURL, onSuccess: onSuccess, onFailure: onFailure)
   }
   
-  func requestWeatherData(weatherURL: URL, onSuccess: @escaping (JSONDictionary?) -> Void, onFailure: @escaping (Error?) -> Void) {
+  func getWeatherForecast(withLocation location: Location, onSuccess: @escaping JSONSuccessHandler, onFailure: @escaping ErrorHandler) {
+    guard let weatherURL = getWeatherUrl(withLocation: location, endpoint: .Forecast) else {
+      onFailure(WeatherError("Couldn't get weather forecast url."))
+      return
+    }
+    
+    requestWeatherData(weatherURL: weatherURL, onSuccess: onSuccess, onFailure: onFailure)
+  }
+  
+  func requestWeatherData(weatherURL: URL, onSuccess: @escaping JSONSuccessHandler, onFailure: @escaping ErrorHandler) {
     let request = URLRequest(url: weatherURL)
     let task = jsonTask(request: request, onSuccess: { json in
       guard let currentWeatherJSON = json else {
@@ -52,7 +52,7 @@ class WeatherService {
     task.resume()
   }
   
-  func jsonTask(request: URLRequest, onSuccess: @escaping (JSONDictionary?) -> Void, onFailure: @escaping (Error?) -> Void) -> URLSessionDataTask {
+  func jsonTask(request: URLRequest, onSuccess: @escaping JSONSuccessHandler, onFailure: @escaping ErrorHandler) -> URLSessionDataTask {
     let config = URLSessionConfiguration.default
     let session = URLSession(configuration: config)
     
