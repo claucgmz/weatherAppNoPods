@@ -28,6 +28,16 @@ class ViewController: UIViewController {
     getWeatherUpdate()
   }
   
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    self.navigationController?.setNavigationBarHidden(true, animated: animated)
+  }
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    self.navigationController?.setNavigationBarHidden(false, animated: animated)
+  }
+  
   //MARK: - Get weather Methods
   /***************************************************************/
   func getWeatherUpdate() {
@@ -99,9 +109,8 @@ extension ViewController {
     }
     
     if segueIdentifier == "weatherForecastSegue" {
-      let DestViewController = segue.destination as! UINavigationController
-      let targetController = DestViewController.topViewController as! WeatherForecastViewController
-      targetController.currentLocation = currentLocation
+      let viewController = segue.destination as! WeatherForecastViewController
+      viewController.currentLocation = currentLocation
     }
   }
 }
