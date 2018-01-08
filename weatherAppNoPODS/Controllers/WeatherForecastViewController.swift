@@ -71,7 +71,7 @@ class WeatherForecastViewController: UIViewController {
 extension WeatherForecastViewController {
   func registerNibs() {
     weatherForecastTableView.register(UINib(nibName: "WeatherForecastCell", bundle: nil), forCellReuseIdentifier: "WeatherForecastCell")
-    weatherForecastTableView.register(UINib(nibName: "WeatherForecastHeaderCell", bundle: nil), forCellReuseIdentifier: "WeatherForecastHeaderCell")
+    weatherForecastTableView.register(UINib(nibName: "WeatherForecastHeaderCell", bundle: nil), forHeaderFooterViewReuseIdentifier: "WeatherForecastHeaderCell")
   }
 }
 
@@ -103,7 +103,7 @@ extension WeatherForecastViewController: UITableViewDelegate {
   }
   
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    let header = tableView.dequeueReusableCell(withIdentifier: "WeatherForecastHeaderCell")
+    let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "WeatherForecastHeaderCell")
     return header
   }
   

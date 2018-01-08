@@ -22,8 +22,8 @@
 		5FAC3EBF1FEAC1EE009A23C8 /* WeatherError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAC3EBE1FEAC1EE009A23C8 /* WeatherError.swift */; };
 		5FCF35862003C38300F4EBB7 /* WeatherForecastCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCF35842003C38300F4EBB7 /* WeatherForecastCell.swift */; };
 		5FCF35872003C38300F4EBB7 /* WeatherForecastCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5FCF35852003C38300F4EBB7 /* WeatherForecastCell.xib */; };
-		5FCF358A2003E21800F4EBB7 /* WeatherForecastHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCF35882003E21800F4EBB7 /* WeatherForecastHeaderCell.swift */; };
-		5FCF358B2003E21800F4EBB7 /* WeatherForecastHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5FCF35892003E21800F4EBB7 /* WeatherForecastHeaderCell.xib */; };
+		5FCF358D200419FC00F4EBB7 /* WeatherForecastHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCF358C200419FC00F4EBB7 /* WeatherForecastHeaderCell.swift */; };
+		5FCF359120041A9200F4EBB7 /* WeatherForecastHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5FCF359020041A9200F4EBB7 /* WeatherForecastHeaderCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,8 +63,8 @@
 		5FAC3EBE1FEAC1EE009A23C8 /* WeatherError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherError.swift; sourceTree = "<group>"; };
 		5FCF35842003C38300F4EBB7 /* WeatherForecastCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherForecastCell.swift; sourceTree = "<group>"; };
 		5FCF35852003C38300F4EBB7 /* WeatherForecastCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WeatherForecastCell.xib; sourceTree = "<group>"; };
-		5FCF35882003E21800F4EBB7 /* WeatherForecastHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherForecastHeaderCell.swift; sourceTree = "<group>"; };
-		5FCF35892003E21800F4EBB7 /* WeatherForecastHeaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WeatherForecastHeaderCell.xib; sourceTree = "<group>"; };
+		5FCF358C200419FC00F4EBB7 /* WeatherForecastHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherForecastHeaderCell.swift; sourceTree = "<group>"; };
+		5FCF359020041A9200F4EBB7 /* WeatherForecastHeaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WeatherForecastHeaderCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,8 +193,8 @@
 			children = (
 				5FCF35842003C38300F4EBB7 /* WeatherForecastCell.swift */,
 				5FCF35852003C38300F4EBB7 /* WeatherForecastCell.xib */,
-				5FCF35882003E21800F4EBB7 /* WeatherForecastHeaderCell.swift */,
-				5FCF35892003E21800F4EBB7 /* WeatherForecastHeaderCell.xib */,
+				5FCF358C200419FC00F4EBB7 /* WeatherForecastHeaderCell.swift */,
+				5FCF359020041A9200F4EBB7 /* WeatherForecastHeaderCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -309,7 +309,7 @@
 				5F51D5DA1FE1BED700293AEB /* LaunchScreen.storyboard in Resources */,
 				5F51D5D71FE1BED700293AEB /* Assets.xcassets in Resources */,
 				5F51D5D51FE1BED700293AEB /* Main.storyboard in Resources */,
-				5FCF358B2003E21800F4EBB7 /* WeatherForecastHeaderCell.xib in Resources */,
+				5FCF359120041A9200F4EBB7 /* WeatherForecastHeaderCell.xib in Resources */,
 				5FCF35872003C38300F4EBB7 /* WeatherForecastCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -337,7 +337,7 @@
 			files = (
 				5F51D60D1FE20EE900293AEB /* WeatherManager.swift in Sources */,
 				5F4BF9801FFC0C69002DF393 /* WeatherService.swift in Sources */,
-				5FCF358A2003E21800F4EBB7 /* WeatherForecastHeaderCell.swift in Sources */,
+				5FCF358D200419FC00F4EBB7 /* WeatherForecastHeaderCell.swift in Sources */,
 				5F51D6071FE207C400293AEB /* APIManager.swift in Sources */,
 				5F51D5D21FE1BED700293AEB /* WeatherMainViewController.swift in Sources */,
 				5F9EB2671FF2CFA000B2314E /* WeatherForecastViewController.swift in Sources */,

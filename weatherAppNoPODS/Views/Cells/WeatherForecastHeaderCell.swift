@@ -8,5 +8,5 @@
 
 import UIKit
 
-class WeatherForecastHeaderCell: UITableViewCell {
+class WeatherForecastHeaderCell: UITableViewHeaderFooterView {
 }
