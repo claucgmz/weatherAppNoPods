@@ -8,9 +8,13 @@
 
 import Foundation
 
+enum WeatherDataError: Error {
+  case emptyData
+  case invalidData
+}
+
 struct WeatherError: Error {
   var errorMessage: String
-  
   init(_ errorDescription: String){
     self.errorMessage = errorDescription
   }

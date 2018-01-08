@@ -23,10 +23,7 @@ class WeatherForecastViewController: UIViewController {
     super.viewDidLoad()
     weatherForecastTableView.delegate = self
     weatherForecastTableView.dataSource = self
-    
-    loadingLabel.text = "Getting 5 day forecast..."
-    weatherForecastTableView.isHidden = true
-    loadingLabel.isHidden = false
+    registerNibs()
     
     guard let location = currentLocation else {
       updateLoadingTextLabel(text: "Couldn't get current location")
@@ -37,6 +34,10 @@ class WeatherForecastViewController: UIViewController {
   }
   
   func getWeatherForecast(withLocation location: Location) {
+    loadingLabel.text = "Getting 5 day forecast..."
+    weatherForecastTableView.isHidden = true
+    loadingLabel.isHidden = false
+    
     weatherManager.getWeatherForecast(withLocation: location, onSuccess: { fiveDayWeatherForecast in
       DispatchQueue.main.async {
         guard let fiveDayWeatherForecast = fiveDayWeatherForecast else {
@@ -58,18 +59,20 @@ class WeatherForecastViewController: UIViewController {
     })
   }
   
-  //MARK: - View & Labels Update Methods
-  /***************************************************************/
   func updateLoadingTextLabel(text: String) {
     loadingLabel.text = text
     weatherForecastTableView.isHidden = true
     loadingLabel.isHidden = false
   }
-  
-  @IBAction func back(_ sender: Any) {
-    self.dismiss(animated: true, completion: nil)
+}
+
+//MARK: - Initial Setup
+/***************************************************************/
+extension WeatherForecastViewController {
+  func registerNibs() {
+    weatherForecastTableView.register(UINib(nibName: "WeatherForecastCell", bundle: nil), forCellReuseIdentifier: "WeatherForecastCell")
+    weatherForecastTableView.register(UINib(nibName: "WeatherForecastHeaderCell", bundle: nil), forCellReuseIdentifier: "WeatherForecastHeaderCell")
   }
-  
 }
 
 //MARK: - TableView DataSource Methods
@@ -80,24 +83,15 @@ extension WeatherForecastViewController: UITableViewDataSource {
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "WeatherCell", for: indexPath)
+    let cell = tableView.dequeueReusableCell(withIdentifier: "WeatherForecastCell") as? WeatherForecastCell
     let weather = weathers[indexPath.row]
     
-    if let weatherCell = cell as? WeatherTableViewCell {
-      weatherCell.maxTemperatureLabel.text = "\(weather.maxTemperature.convertTemperatureToCelsius())°"
-      weatherCell.minTemperatureLabel.text = "\(weather.minTemperature.convertTemperatureToCelsius())°"
-      weatherCell.dateLabel.text = getFormattedDate(dateTime: weather.dateTime)
-      weatherCell.dayLabel.text = getDayOfWeek(dateTime: weather.dateTime)
-      
-      if( indexPath.row % 2 == 0) {
-        cell.backgroundColor = tealBlue
-      }
-      else{
-        cell.backgroundColor = blue
-      }
+    if let weatherCell = cell {
+      weatherCell.configure(withWeather: weather, color: indexPath.row % 2 == 0 ? tealBlue : blue)
+      return weatherCell
     }
-    
-    return cell
+   
+    return cell!
   }
 }
 
@@ -109,7 +103,7 @@ extension WeatherForecastViewController: UITableViewDelegate {
   }
   
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    let header = tableView.dequeueReusableCell(withIdentifier: "WeatherHeaderCell")
+    let header = tableView.dequeueReusableCell(withIdentifier: "WeatherForecastHeaderCell")
     return header
   }
   
