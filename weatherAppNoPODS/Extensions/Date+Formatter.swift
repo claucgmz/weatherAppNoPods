@@ -18,17 +18,13 @@ extension Date {
   
   var dayOfWeek: String {
     let dateFormatter = DateFormatter()
-    let currentWeekDay = Calendar.current.component(.weekday, from: self)
+    let currentWeekDay = Calendar.current.component(.weekday, from: self) - 1
     
-    if currentWeekDay-1 > -1 {
-      return dateFormatter.weekdaySymbols[currentWeekDay-1]
-    }
-    
-    return "Not available"
+    return dateFormatter.weekdaySymbols[currentWeekDay]
   }
   
   var isToday: Bool {
-    let calendar = NSCalendar.current
+    let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
     if calendar.isDateInToday(self) {
       return true
     }

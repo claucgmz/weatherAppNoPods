@@ -13,8 +13,6 @@ struct Weather {
   private var _minTemperatureInKelvin: Double
   private var _maxTemperatureInKelvin: Double
   
-  static var celsiusToKelvinDifference = -273.15
-  
   var temperatureInCelsius: Int {
     return convertKelvinToCelsius(temperature: self._temperatureInKelvin)
   }
@@ -76,7 +74,7 @@ struct Weather {
     self._temperatureInKelvin = currentTemperature
     self._minTemperatureInKelvin = minTemperature
     self._maxTemperatureInKelvin = maxTemperature
-    self.dateTime = Date(timeIntervalSinceReferenceDate: dateTime)
+    self.dateTime = Date(timeIntervalSince1970: dateTime)
     self.cityName = cityName
     self.countryName = countryName
     self.description = description

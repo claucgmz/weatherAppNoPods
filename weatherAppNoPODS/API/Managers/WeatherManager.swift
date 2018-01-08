@@ -71,7 +71,7 @@ class WeatherManager {
           return
         }
         
-        let date = Date(timeIntervalSinceReferenceDate: dateTime)
+        let date = Date(timeIntervalSince1970: dateTime)
         
         if(!date.isToday) {
           let forecastWeather = try? Weather(withJSON: weather, cityName: cityName, countryName: countryName, dateTime: date)
