@@ -62,7 +62,9 @@ class WeatherManager {
         onFailure(WeatherError("Couldn't get weather data."))
         return
       }
-      
+      /**
+        Loop to filter the list that returns daily weather every 3 hours, requirements were one weather per day, grab the first weather of the day.
+       **/
       for i in stride(from: 0, to: list.count, by: 7) {
         let weather = list[i]
         
