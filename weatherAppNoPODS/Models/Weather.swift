@@ -9,20 +9,20 @@
 import Foundation
 
 struct Weather {
-  private var _temperatureInKelvin: Double
-  private var _minTemperatureInKelvin: Double
-  private var _maxTemperatureInKelvin: Double
+  private var temperatureInKelvin: Double
+  private var minTemperatureInKelvin: Double
+  private var maxTemperatureInKelvin: Double
   
   var temperatureInCelsius: Int {
-    return convertKelvinToCelsius(temperature: self._temperatureInKelvin)
+    return convertKelvinToCelsius(temperature: self.temperatureInKelvin)
   }
   
   var minTemperatureInCelsius: Int {
-    return convertKelvinToCelsius(temperature: self._minTemperatureInKelvin)
+    return convertKelvinToCelsius(temperature: self.minTemperatureInKelvin)
   }
   
   var maxTemperatureInCelsius: Int {
-    return convertKelvinToCelsius(temperature: self._maxTemperatureInKelvin)
+    return convertKelvinToCelsius(temperature: self.maxTemperatureInKelvin)
   }
   
   var dateTime: Date
@@ -71,9 +71,9 @@ struct Weather {
       throw WeatherDataError.invalidData
     }
     
-    self._temperatureInKelvin = currentTemperature
-    self._minTemperatureInKelvin = minTemperature
-    self._maxTemperatureInKelvin = maxTemperature
+    self.temperatureInKelvin = currentTemperature
+    self.minTemperatureInKelvin = minTemperature
+    self.maxTemperatureInKelvin = maxTemperature
     self.dateTime = Date(timeIntervalSince1970: dateTime)
     self.cityName = cityName
     self.countryName = countryName
@@ -106,9 +106,9 @@ struct Weather {
       throw WeatherDataError.invalidData
     }
     
-    self._temperatureInKelvin = currentTemperature
-    self._minTemperatureInKelvin = minTemperature
-    self._maxTemperatureInKelvin = maxTemperature
+    self.temperatureInKelvin = currentTemperature
+    self.minTemperatureInKelvin = minTemperature
+    self.maxTemperatureInKelvin = maxTemperature
     self.dateTime = dateTime
     self.cityName = cityName
     self.countryName = countryName
